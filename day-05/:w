@@ -1,0 +1,84 @@
+pub fn process_part1(input: &str) -> String {
+    let (map, moves) = input.split_once("\n\n").unwrap();
+    let firstline = map.lines().rev().take(1).collect::<Vec<_>>().first();
+    dbg!(firstline);
+    let stack: Vec<Vec<char>> = map.lines().rev().take(1)
+        .map(|l| l.split_whitespace()
+             .map(|_| Vec::new())
+        ).collect::<Vec<Vec<_>>>().first();
+
+    map.lines().rev().skip(1).map(|line| {
+        line
+    });
+
+    let result = input
+        .lines()
+        .map(|pair| {
+           let ranges = pair.split(",").map(|r| {
+                let nums = r.split("-").map(|s| s.parse::<u32>().unwrap()).collect::<Vec<_>>();
+                (nums[0], nums[1])
+           }).collect::<Vec<_>>();
+           assert!(ranges.len() == 2);
+           let (low1, up1) = ranges[0];
+           let (low2, up2) = ranges[1];
+           if low1 <= low2 && up1 >= up2 {
+               return 1;
+           }
+           if low2 <= low1 && up2 >= up1 {
+               return 1;
+           }
+           return 0;
+        })
+        .sum::<u32>();
+    result.to_string()
+}
+
+
+pub fn process_part2(input: &str) -> String {
+    let result = input
+        .lines()
+        .map(|pair| {
+
+           let ranges = pair.split(",").map(|r| {
+                let nums = r.split("-").map(|s| s.parse::<u32>().unwrap()).collect::<Vec<_>>();
+                (nums[0], nums[1])
+           }).collect::<Vec<_>>();
+           assert!(ranges.len() == 2);
+           let mut r1 = ranges[0].0..=ranges[0].1;
+           let r2 = ranges[1].0..=ranges[1].1;
+           if r1.any(|x| r2.contains(&x)) {
+               return 1;
+           }
+           return 0;
+        })
+        .sum::<u32>();
+    result.to_string()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const INPUT: &str = "    [D]    
+[N] [C]    
+[Z] [M] [P]
+ 1   2   3 
+
+move 1 from 2 to 1
+move 3 from 1 to 3
+move 2 from 2 to 1
+move 1 from 1 to 2";
+
+    #[test]
+    fn it_works() {
+        let result = process_part1(INPUT);
+        assert_eq!(result, "CMZ");
+    }
+
+    #[test]
+    #[ignore = "not yet"]
+    fn part2_works() {
+        let result = process_part2(INPUT);
+        assert_eq!(result, "4");
+    }
+}
